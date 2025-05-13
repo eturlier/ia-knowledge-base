@@ -1,0 +1,54 @@
+name: Update Knowledge Base
+
+on:
+    push:
+        paths:
+            - 'documentations/**' # Déclenché si un fichier du dossier documentations change
+    workflow_dispatch: # Permet de lancer manuellement via GitHub Actions
+
+# Définir les permissions nécessaires pour le workflow
+permissions:
+    contents: write
+
+jobs:
+    generate-kb:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Install Zsh
+              run: sudo apt-get install zsh
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+
+            - name: Install pnpm
+              uses: pnpm/action-setup@v2
+              with:
+                  version: 8
+                  run_install: false
+
+            - name: Install flat-tree dependencies
+              working-directory: ./documentations/flat-tree
+              run: pnpm install
+
+            - name: Install prettier globally
+              run: pnpm add -g prettier
+
+            - name: Make kb.sh executable
+              run: chmod +x documentations/kb.sh
+
+            - name: Run kb.sh to generate the knowledge base
+              run: ./documentations/kb.sh
+
+            - name: Commit updated kb.md if changed
+              run: |
+                  git config --global user.name "github-actions[bot]"
+                  git config --global user.email "github-actions[bot]@users.noreply.github.com"
+                  git add documentations/kb.md
+                  git diff --cached --quiet || git commit -m "chore: update knowledge base"
+                  git push
