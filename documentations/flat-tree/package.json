@@ -1,0 +1,15 @@
+{
+  "name": "flat-tree",
+  "version": "1.0.0",
+  "author": "Elodie TURLIER",
+  "description": "Directory tree generator with exclusions",
+  "main": "flat-tree.js",
+  "bin": {
+    "flat-tree": "./flat-tree.js"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "clipboardy": "^2.3.0",
+    "commander": "^9.5.0"
+  }
+}

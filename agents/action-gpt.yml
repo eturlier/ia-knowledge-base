@@ -1,0 +1,48 @@
+openapi: 3.1.0
+info:
+    title: Knowledge Base Fetcher
+    description: Fetches and loads the latest knowledge base from GitHub.
+    version: 1.2.0
+servers:
+    - url: https://api.github.com
+paths:
+    /repos/{owner}/{repo}/contents/documentations/kb.md:
+        get:
+            operationId: fetchKnowledgeBase
+            summary: Load the latest knowledge base and show the update date
+            description: |
+                Retrieves the latest knowledge file from GitHub and extracts the update date.
+                The AI should acknowledge the date and use the content for context.
+            security:
+                - github_auth: []
+            responses:
+                '200':
+                    description: Knowledge base loaded successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/KnowledgeBaseResponse'
+components:
+    schemas:
+        KnowledgeBaseResponse:
+            type: object
+            properties:
+                date:
+                    type: string
+                    format: date
+                    description: Extracted update date (YYYY-MM-DD)
+                title:
+                    type: string
+                    description: Extracted document title
+                source:
+                    type: string
+                    format: uri
+                    description: Source URL of the knowledge file
+                message:
+                    type: string
+                    description: User-facing confirmation message
+    securitySchemes:
+        github_auth:
+            type: http
+            scheme: bearer
+            description: GitHub Personal Access Token
