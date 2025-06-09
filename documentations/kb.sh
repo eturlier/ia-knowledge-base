@@ -87,7 +87,7 @@ process_file() {
 
 process_rules() {
     local rules_dir=".cursor/rules"
-    local windsurfrules_file=".windsurfrules"
+    local windsurfrules_dir=".windsurf/rules"
     local temp_rules="/tmp/rules_content.md"
     local found_rules=false
     
@@ -148,29 +148,46 @@ process_rules() {
         log_warning "Rules directory '$rules_dir' not found"
     fi
     
-    # Check for existing .windsurfrules file
-    if [ -f "$windsurfrules_file" ]; then
-        log_info "Found existing .windsurfrules file"
-        if $found_rules; then
-            # Only try to update if we found new rules
-            if cp "$temp_rules" "$windsurfrules_file" 2>/dev/null; then
-                log_success "Rules consolidated in $windsurfrules_file"
-            else
-                log_warning "Could not update .windsurfrules file"
-            fi
+    # Check for existing .windsurf/rules directory
+    if [ -d "$windsurfrules_dir" ]; then
+        # Use find with error suppression
+        if find "$windsurfrules_dir" -name "*.mdc" -type f 2>/dev/null | grep -q .; then
+            log_info "Processing .mdc files from $windsurfrules_dir"
+            while IFS= read -r rule_file; do
+                if [ -f "$rule_file" ]; then
+                    local filename=$(basename "$rule_file")
+                    log_info "Processing rule: $filename"
+                    
+                    # Extract content after frontmatter
+                    awk '
+                        BEGIN { in_frontmatter=0; printed=0 }
+                        /^---$/ {
+                            if (in_frontmatter) {
+                                in_frontmatter=0
+                                next
+                            } else {
+                                in_frontmatter=1
+                                next
+                            }
+                        }
+                        !in_frontmatter && printed {
+                            print
+                        }
+                        !in_frontmatter && !printed {
+                            if (NF) {
+                                print
+                                printed=1
+                            }
+                        }
+                    ' "$rule_file" >> "$temp_rules" 2>/dev/null && found_rules=true
+                    echo "" >> "$temp_rules"
+                fi
+            done < <(find "$windsurfrules_dir" -name "*.mdc" -type f 2>/dev/null)
         else
-            log_info "Using existing .windsurfrules file (no new rules to process)"
+            log_warning "No .mdc files found in $windsurfrules_dir"
         fi
     else
-        if $found_rules; then
-            if cp "$temp_rules" "$windsurfrules_file" 2>/dev/null; then
-                log_success "Created new .windsurfrules file"
-            else
-                log_warning "Could not create .windsurfrules file"
-            fi
-        else
-            log_warning "No rules found and no existing .windsurfrules file"
-        fi
+        log_warning "Rules directory '$windsurfrules_dir' not found"
     fi
     
     # Cleanup
