@@ -65,23 +65,47 @@ process_file() {
     local pattern=$1
     
     cd "$PROJECT_ROOT"
-    # Use zsh globbing
-    for file in $~pattern; do
-        if [ -f "$file" ]; then
-            local relative_path="${file#./}"
+    # Remove leading ./ if present to standardize paths
+    pattern=${pattern#./}
+    
+    # Check if the pattern is a direct file path without wildcards
+    if [[ ! "$pattern" =~ [*?] ]]; then
+        # Direct file path handling
+        if [ -f "$pattern" ]; then
+            local relative_path="$pattern"
             local full_path="$PROJECT_ROOT/$relative_path"
             local ext=$(get_file_extension "$relative_path")
-            log_info "Processing: $relative_path"
+            log_info "Processing direct file: $relative_path"
             {
                 printf "\n### %s\n\n" "$relative_path"
                 printf "\`\`\`\`%s\n" "$ext"
                 cat "$full_path"
                 printf "\n\`\`\`\`\n"
             } >> "$OUTPUT_FILE"
+            ((additional_count++))
+        else
+            log_warning "File not found: $pattern"
         fi
-    done
-    cd "$SCRIPT_DIR"
+    else
+        # Use zsh globbing for patterns with wildcards
+        for file in $~pattern; do
+            if [ -f "$file" ]; then
+                local relative_path="${file#./}"
+                local full_path="$PROJECT_ROOT/$relative_path"
+                local ext=$(get_file_extension "$relative_path")
+                log_info "Processing: $relative_path"
+                {
+                    printf "\n### %s\n\n" "$relative_path"
+                    printf "\`\`\`\`%s\n" "$ext"
+                    cat "$full_path"
+                    printf "\n\`\`\`\`\n"
+                } >> "$OUTPUT_FILE"
+                ((additional_count++))
+            fi
+        done
+    fi
     
+    cd "$SCRIPT_DIR"
     return 0
 }
 
@@ -201,7 +225,7 @@ process_rules() {
 }
 
 # Script header
-print_header "📚 Generating Documentation"
+print_header "1- Generating Documentation"
 
 # Initial cleanup
 log_info "Cleaning previous file..."
@@ -226,7 +250,7 @@ else
 fi
 
 # Step 2: Process specification files
-print_header "📂 Processing Specification Files"
+print_header "2- Processing Specification Files"
 
 # Create specifications directory if it doesn't exist
 if [ ! -d "$SPECS_DIR" ]; then
@@ -249,7 +273,7 @@ done
 cd "$SCRIPT_DIR"
 
 # After processing specification files
-print_header "📋 Processing Rules"
+print_header "3- Processing Rules"
 if [ -d "$PROJECT_ROOT/$rules_dir" ]; then
     process_rules
 else
@@ -268,7 +292,7 @@ if [ ! -f "$KNOWLEDGE_LIST" ]; then
 fi
 
 if [ -f "$KNOWLEDGE_LIST" ]; then
-    print_header "📦 Processing Additional Files"
+    print_header "4- Processing Additional Files"
     printf "\n## Additional Files\n\n" >> "$OUTPUT_FILE"
     printf "> ⚠️ **IMPORTANT**: These files must be taken very seriously as they represent the latest up-to-date versions of our codebase. You MUST rely on these versions and their content imperatively.\n\n" >> "$OUTPUT_FILE"
     
@@ -278,14 +302,14 @@ if [ -f "$KNOWLEDGE_LIST" ]; then
             # Trim whitespace
             file=$(echo "$file" | xargs)
             process_file "$file"
-            ((additional_count++))
+            # Note: additional_count is now incremented inside process_file
         fi
     done < "$KNOWLEDGE_LIST"
 fi
 
 # Add project structure at the end
 if [ -d "$PROJECT_ROOT" ]; then
-    print_header "🌳 Project Structure"
+    print_header "5- Project Structure"
     {
         printf "\n### Project Structure\n\n"
         printf "\`\`\`\`text\n"
@@ -309,7 +333,7 @@ fi
 
 
 # Summary
-print_header "📊 Summary"
+print_header "6- Summary"
 log_success "$count specification files processed"
 [ "$additional_count" -gt 0 ] && log_success "$additional_count additional files processed"
 log_success "Documentation generated in: $OUTPUT_FILE"
