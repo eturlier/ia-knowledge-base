@@ -120,28 +120,28 @@ Du coup tu peut copier directement son contenu dans les actions de ton GPT.
 ### Étape 3 : Configuration de votre Custom GPT avec le token GitHub
 
 1. Accéder à la plateforme GPT Builder
-Connectez-vous à votre compte OpenAI
-Accédez à la section GPT Builder ou Custom GPT
+   - Connectez-vous à votre compte OpenAI
+   - Accédez à la section GPT Builder ou Custom GPT
 2. Créer ou modifier votre Custom GPT
-Si vous créez un nouveau GPT, cliquez sur "Create a GPT"
-Si vous modifiez un GPT existant, sélectionnez-le dans votre liste
+   - Si vous créez un nouveau GPT, cliquez sur "Create a GPT"
+   - Si vous modifiez un GPT existant, sélectionnez-le dans votre liste
 3. Configurer les actions (Actions)
-Dans l'interface de création/modification, allez à la section "Actions" ou "Capacités"
-Activez l'option "Actions" si ce n'est pas déjà fait
+   - Dans l'interface de création/modification, allez à la section "Actions" ou "Capacités"
+   - Activez l'option "Actions" si ce n'est pas déjà fait
 4. Importer votre fichier OpenAPI
-Cliquez sur "Import from OpenAPI" ou "Importer depuis OpenAPI"
+   - Cliquez sur "Import from OpenAPI" ou "Importer depuis OpenAPI"
 Vous pouvez soit :
-Télécharger votre fichier action-gpt.yml
-Copier-coller le contenu du fichier
-Fournir l'URL du fichier (s'il est accessible publiquement)
+   - Télécharger votre fichier action-gpt.yml
+   - Copier-coller le contenu du fichier
+   - Fournir l'URL du fichier (s'il est accessible publiquement)
 5. Configurer l'authentification
-Une fois le fichier importé, vous devriez voir une option pour configurer l'authentification
-Sélectionnez "Bearer" comme type d'authentification
-Dans le champ du token, entrez votre token d'accès personnel GitHub (sans le préfixe "Bearer")
-Si le système vous demande d'ajouter le préfixe "Bearer", suivez les instructions
+   - Une fois le fichier importé, vous devriez voir une option pour configurer l'authentification
+   - Sélectionnez "Bearer" comme type d'authentification
+   - Dans le champ du token, entrez votre token d'accès personnel GitHub (sans le préfixe "Bearer")
+   - Si le système vous demande d'ajouter le préfixe "Bearer", suivez les instructions
 6. Tester la connexion
-Utilisez l'option "Test" pour vérifier que l'authentification fonctionne correctement
-Assurez-vous que le Custom GPT peut accéder au fichier spécifié dans votre dépôt
+   - Utilisez l'option "Test" pour vérifier que l'authentification fonctionne correctement
+   - Assurez-vous que le Custom GPT peut accéder au fichier spécifié dans votre dépôt
 
 ### Étape 4 : Comprendre le fonctionnement
 
