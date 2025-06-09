@@ -5,6 +5,7 @@ Permet de charger les fichiers de la base de connaissances dans des GPT personna
 ## Présentation
 
 Ce projet regroupe tout ce qu'il faut pour créer un GPT personnalisé avec chargement d'une base de connaissance pour un projet github.
+
 TODO => A faire pour Gitlab
 
 Contenu :
@@ -130,6 +131,7 @@ Du coup tu peut copier directement son contenu dans les actions de ton GPT.
    - Activez l'option "Actions" si ce n'est pas déjà fait
 4. Importer votre fichier OpenAPI
    - Cliquez sur "Import from OpenAPI" ou "Importer depuis OpenAPI"
+
 Vous pouvez soit :
    - Télécharger votre fichier action-gpt.yml
    - Copier-coller le contenu du fichier
